@@ -1,19 +1,33 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Project Phoenix Resume
+% Author : Aabel Jeevan Jose
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \documentclass[10pt,a4paper]{article}
 
-% ---------- Packages ----------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \usepackage[a4paper,margin=0.7in]{geometry}
+\usepackage[hidelinks]{hyperref}
 \usepackage{titlesec}
 \usepackage{enumitem}
-\usepackage[hidelinks]{hyperref}
-\usepackage[dvipsnames]{xcolor}
-\usepackage{parskip}
 \usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{parskip}
 
-% ---------- Page Style ----------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Page Setup
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
 
-% ---------- Section Formatting ----------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Section Formatting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \titleformat{\section}
 {\large\bfseries}
 {}
@@ -22,12 +36,59 @@
 
 \titlespacing{\section}
 {0pt}
-{10pt}
-{6pt}
+{8pt}
+{4pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bullet Formatting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setlist[itemize]{
+leftmargin=18pt,
+itemsep=2pt,
+topsep=2pt
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
-% Header will go here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HEADER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+
+{\Huge\bfseries AABEL JEEVAN JOSE}
+
+\vspace{4pt}
+
+{\large Embedded Software Engineer}
+
+\vspace{6pt}
+
+Kochi,India
+
+\vspace{3pt}
+
++91 9447666473 \hspace{15pt} | \hspace{15pt}
+aabeljeev1010@gmail.com
+
+\vspace{3pt}
+
+\href{https://github.com/Aabeljeevan}{GitHub}
+\hspace{15pt} | \hspace{15pt}
+\href{https://www.linkedin.com/in/aabel-jeevan-jose-47b999202/}{LinkedIn}
+
+\end{center}
+
+\vspace{6pt}
+
+\hrule
+
+\vspace{10pt}
 
 \input{sections/summary}
 \input{sections/skills}
