@@ -1,0 +1,128 @@
+# Software Requirements Specification (SRS)
+
+Version: 1.0
+
+Project: UDS Diagnostic Server
+
+Author: Aabel Jeevan Jose
+
+Date: 01-Aug-2026
+
+Status: Draft
+
+## Objective
+
+Develop a modular Embedded C implementation of a UDS (Unified Diagnostic Services) server over CAN using ISO-TP transport protocol.
+
+The project should simulate the diagnostic communication behavior of an automotive ECU and follow a layered software architecture.
+
+---
+## Definitions
+
+CAN      - Controller Area Network
+
+ISO-TP   - ISO 15765-2 Transport Protocol
+
+UDS       - Unified Diagnostic Services (ISO 14229)
+
+ECU       - Electronic Control Unit
+
+DID       - Data Identifier
+
+## Functional Requirements
+
+### FR-1
+
+The server shall receive diagnostic requests from a tester over CAN.
+
+### FR-2
+
+The server shall support ISO-TP Single Frame communication.
+
+### FR-3
+
+The server shall decode UDS Service IDs.
+
+### FR-4
+
+The server shall generate positive responses.
+
+### FR-5
+
+The server shall generate negative responses whenever a request is invalid.
+
+### FR-6
+
+The server shall support Diagnostic Session Control (0x10).
+
+### FR-7
+
+The server shall support ECU Reset (0x11).
+
+### FR-8
+
+The server shall support ReadDataByIdentifier (0x22).
+
+### FR-9
+
+The server shall support WriteDataByIdentifier (0x2E).
+
+### FR-10
+
+The software shall be modular and independent of hardware.
+
+---
+
+## Non-Functional Requirements
+
+- Written in standard C
+- Modular architecture
+- Portable
+- Easy to test
+- Layered design
+- Well documented
+
+### NFR-1
+
+The software shall be written in ISO C.
+
+### NFR-2
+
+The software shall follow a layered architecture.
+
+### NFR-3
+
+The software shall be portable across hardware platforms.
+
+### NFR-4
+
+The software shall be modular and reusable.
+
+### NFR-5
+
+The software shall be documented using Markdown.
+
+---
+
+## Constraints
+
+- Classical CAN only
+- Maximum payload 8 bytes per CAN frame
+- Developed using standard C
+- Platform independent
+
+## Initial Scope
+
+Included
+
+- CAN abstraction
+- ISO-TP
+- UDS
+- Basic DID database
+
+Excluded
+
+- AUTOSAR
+- Bootloader
+- Flash programming
+- CAN-FD
