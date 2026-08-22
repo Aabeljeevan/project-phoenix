@@ -6,7 +6,8 @@ CFLAGS = -Wall -Wextra -Iinclude
 
 # Source Files
 SRC = main.c \
-      src/can.c
+      src/can.c \
+	  src/can_if.c
 
 # Output Executable
 TARGET = uds_server

@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "include/can.h"
-
+#include "can_if.h"
+#include "can.h"
 int main(void)
 {
     Std_ReturnType status;
@@ -30,7 +30,7 @@ int main(void)
 
     /* Send Frame */
 
-    status = Can_SendFrame(&txFrame);
+    status = CanIf_Transmit(&txFrame);
 
     if (status != E_OK)
     {
@@ -40,7 +40,7 @@ int main(void)
 
     /* Receive Frame */
 
-    status = Can_ReceiveFrame(&rxFrame);
+    status = CanIf_Receive(&rxFrame);
 
     if (status != E_OK)
     {
