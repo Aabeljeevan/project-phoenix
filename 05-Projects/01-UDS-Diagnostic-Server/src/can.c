@@ -65,8 +65,11 @@ Std_ReturnType Can_ReceiveFrame(Can_FrameType *frame)
     frame->id = 0x7E8;
     frame->dlc = 3;
 
-    frame->data[0] = 0x50;
-    frame->data[1] = 0x01;
+    // frame->data[0] = 0x50;
+    // frame->data[1] = 0x01;
+    // frame->data[2] = 0x00;
+    frame->data[0] = 0x30;
+    frame->data[1] = 0x00;
     frame->data[2] = 0x00;
 
     return E_OK;
