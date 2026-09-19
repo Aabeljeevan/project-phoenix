@@ -1,7 +1,6 @@
 #include "can.h"
-
+#include <unistd.h>
 #include <stdio.h>
-
 /*--------------------------------------------------------------
  * CAN Driver Initialization
  *-------------------------------------------------------------*/
@@ -25,7 +24,7 @@ Std_ReturnType Can_SendFrame(const Can_FrameType *frame)
     {
         return E_NOT_OK;
     }
-
+    
     printf("\n========== CAN TX ==========\n");
     printf("ID  : 0x%03X\n", frame->id);
     printf("DLC : %d\n", frame->dlc);

@@ -2,8 +2,10 @@
 #include  "can_if.h"
 #include <stddef.h>
 #include <stdio.h>
+#include <unistd.h>
 
-static Std_ReturnType IsoTp_ReceiveFlowControl(uint8 *block_size,uint8 *flow_status){
+
+static Std_ReturnType IsoTp_ReceiveFlowControl(uint8 *block_size,uint8 *flow_status,uint8 *STmin){
     Can_FrameType fcframe={0};
     Std_ReturnType status =CanIf_Receive(&fcframe);
     if (status !=E_OK){
@@ -20,9 +22,15 @@ static Std_ReturnType IsoTp_ReceiveFlowControl(uint8 *block_size,uint8 *flow_sta
     //     return E_NOT_OK;
     // }
     *block_size =fcframe.data[1];
+    *STmin =fcframe.data[2];
     printf("\nFC recieved : BS =%d, Stmin =%d\n",fcframe.data[1],fcframe.data[2]);
     return E_OK;
 } 
+
+
+static void IsoTP_DelayMS(uint8 milliseconds){
+    usleep((unsigned int)milliseconds*1000U);
+}
 
 
 Std_ReturnType IsoTp_Transmit(uint16 can_id , const uint8 *data , uint16 length ){
@@ -83,9 +91,10 @@ Std_ReturnType IsoTp_Transmit(uint16 can_id , const uint8 *data , uint16 length 
         uint8 block_size=0;
         uint8 flow_status=0;
         uint8 wait_count=0;
+        uint8 STmin=0;
         while (1)
         {
-            status = IsoTp_ReceiveFlowControl(&block_size,&flow_status);
+            status = IsoTp_ReceiveFlowControl(&block_size,&flow_status,&STmin);
             if (status != E_OK){
                 return E_NOT_OK;
             }
@@ -137,10 +146,14 @@ Std_ReturnType IsoTp_Transmit(uint16 can_id , const uint8 *data , uint16 length 
                     return E_NOT_OK;
                 }
                 cf_count++;
+                if (offset+bytes_to_copy<length){
+                    IsoTP_DelayMS(STmin);
+                }
                 if (block_size !=0 && cf_count>=block_size){
                     uint8 new_block_size =0;
                     uint8 new_flow_status =0;
-                    status = IsoTp_ReceiveFlowControl(&new_block_size,&new_flow_status);
+                    uint8 new_STmin=0;
+                    status = IsoTp_ReceiveFlowControl(&new_block_size,&new_flow_status, &new_STmin);
                     if(status != E_OK){
                         return E_NOT_OK;
                     }
@@ -148,6 +161,7 @@ Std_ReturnType IsoTp_Transmit(uint16 can_id , const uint8 *data , uint16 length 
                         /*cts*/
                         block_size=new_block_size;
                         cf_count=0;
+                        STmin=new_STmin;
                     }
                     else if (new_flow_status==1){
                         /*wait*/
