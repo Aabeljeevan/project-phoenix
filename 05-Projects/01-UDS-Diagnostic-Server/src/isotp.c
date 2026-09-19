@@ -1,6 +1,29 @@
 #include "isotp.h"
 #include  "can_if.h"
 #include <stddef.h>
+#include <stdio.h>
+
+static Std_ReturnType IsoTp_ReceiveFlowControl(uint8 *block_size,uint8 *flow_status){
+    Can_FrameType fcframe={0};
+    Std_ReturnType status =CanIf_Receive(&fcframe);
+    if (status !=E_OK){
+        return E_NOT_OK;
+    }
+    if (fcframe.dlc <3){
+        return E_NOT_OK;
+    }
+    if (((fcframe.data[0]>>4)&0x0F) !=3){
+        return E_NOT_OK;
+    }
+    *flow_status =fcframe.data[0]&0x0F;
+    // if (flow_status !=0){
+    //     return E_NOT_OK;
+    // }
+    *block_size =fcframe.data[1];
+    printf("\nFC recieved : BS =%d, Stmin =%d\n",fcframe.data[1],fcframe.data[2]);
+    return E_OK;
+} 
+
 
 Std_ReturnType IsoTp_Transmit(uint16 can_id , const uint8 *data , uint16 length ){
     if (data == NULL){
@@ -38,21 +61,61 @@ Std_ReturnType IsoTp_Transmit(uint16 can_id , const uint8 *data , uint16 length 
         if (status != E_OK){
             return E_NOT_OK;
         }
-        Can_FrameType fcframe={0};
-        status=CanIf_Receive(&fcframe);
-        if (status !=E_OK){
+        // Can_FrameType fcframe={0};
+        // status=CanIf_Receive(&fcframe);
+        // if (status !=E_OK){
+        //     return E_NOT_OK;
+        // }
+        // uint8 frame_type;
+        // status=CanIf_Receive(&fcframe);
+        // if (status !=E_OK){
+        //     return E_NOT_OK;
+        // }
+        // if (fcframe.dlc<3){
+        //     return E_NOT_OK;
+        // }
+        // frame_type=(fcframe.data[0]>>4)&0x0F;
+        // if (frame_type !=3){
+        //     return E_NOT_OK;
+        // }
+        // uint8 flowstatus;
+        // flowstatus=(fcframe.data[0]&0xF);
+        uint8 block_size=0;
+        uint8 flow_status=0;
+        uint8 wait_count=0;
+        while (1)
+        {
+            status = IsoTp_ReceiveFlowControl(&block_size,&flow_status);
+            if (status != E_OK){
+                return E_NOT_OK;
+            }
+            if(flow_status==0){
+                /*CTS recievied -continue transmission*/
+                break;
+            }
+            else if (flow_status==1){
+                /*wait condition*/
+                wait_count++;
+                if (wait_count>=3){
+                    return E_NOT_OK;
+                }
+            } 
+            else if (flow_status==2){
+                return E_NOT_OK;/*  overflow*/
+            }
+            else {
+                return E_NOT_OK;
+            }     
+        }
+        printf("\n Flow status = %d\n ",flow_status);
+        if (flow_status !=0){
             return E_NOT_OK;
         }
-        uint8 frame_type;
-        frame_type=(fcframe.data[0]>>4)&0x0F;
-        if (frame_type !=3){
-            return E_NOT_OK;
-        }
-        uint8 flowstatus;
-        flowstatus=(fcframe.data[0]&0xF);
-        if (flowstatus==0){
+        // if (flowstatus==0){
             uint16 offset=6;
             uint8 sequence_number=1;
+            // uint8 block_size=fcframe.data[1];
+            uint8 cf_count=0;
             while(offset<length){
                 Can_FrameType cfframe={0};
                 cfframe.id=can_id;
@@ -73,20 +136,44 @@ Std_ReturnType IsoTp_Transmit(uint16 can_id , const uint8 *data , uint16 length 
                 if (status != E_OK){
                     return E_NOT_OK;
                 }
+                cf_count++;
+                if (block_size !=0 && cf_count>=block_size){
+                    uint8 new_block_size =0;
+                    uint8 new_flow_status =0;
+                    status = IsoTp_ReceiveFlowControl(&new_block_size,&new_flow_status);
+                    if(status != E_OK){
+                        return E_NOT_OK;
+                    }
+                    if (new_flow_status==0){
+                        /*cts*/
+                        block_size=new_block_size;
+                        cf_count=0;
+                    }
+                    else if (new_flow_status==1){
+                        /*wait*/
+                        return E_NOT_OK;
+                    }
+                    else if (new_flow_status==2){
+                        return E_NOT_OK;
+                    }
+                    else{
+                        return E_NOT_OK;
+                    }
+                }
                 offset=offset+bytes_to_copy;
                 sequence_number++;
             }
             //continue to send
         }
-        else if(flowstatus==1 ){
-            //wait
-        }
-        else if (flowstatus ==2){
-            //overflow
-        }
-        else{
-            return E_NOT_OK;
-        }
+        // else if(flowstatus==1 ){
+        //     //wait
+        // }
+        // else if (flowstatus ==2){
+        //     //overflow
+        // }
+        // else{
+        //     return E_NOT_OK;
+        // }
 
 
     return E_OK;
@@ -94,4 +181,4 @@ Std_ReturnType IsoTp_Transmit(uint16 can_id , const uint8 *data , uint16 length 
     }
    
 
-}
+// }

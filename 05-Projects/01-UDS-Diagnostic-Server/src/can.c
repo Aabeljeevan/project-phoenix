@@ -55,6 +55,7 @@ Std_ReturnType Can_SendFrame(const Can_FrameType *frame)
 
 Std_ReturnType Can_ReceiveFrame(Can_FrameType *frame)
 {
+    static uint8 recieve_count =0;
     if (frame == NULL)
     {
         return E_NOT_OK;
@@ -68,9 +69,14 @@ Std_ReturnType Can_ReceiveFrame(Can_FrameType *frame)
     // frame->data[0] = 0x50;
     // frame->data[1] = 0x01;
     // frame->data[2] = 0x00;
-    frame->data[0] = 0x30;
-    frame->data[1] = 0x00;
+    if (recieve_count==0){
+        frame->data[0] = 0x30;/*ct*/
+    }else{
+        frame->data[0] = 0x30;/*cts*/
+    }
+    frame->data[1] = 0x02;
     frame->data[2] = 0x00;
+    recieve_count++;
 
     return E_OK;
 }
