@@ -28,10 +28,24 @@ static Std_ReturnType IsoTp_ReceiveFlowControl(uint8 *block_size,uint8 *flow_sta
 } 
 
 
-static void IsoTP_DelayMS(uint8 milliseconds){
-    usleep((unsigned int)milliseconds*1000U);
+static void IsoTP_DelayUS(uint32 microseconds){
+    usleep(microseconds);
 }
 
+static Std_ReturnType IsoTP_GetSTminDelay(uint8 Stmin,uint32 *delay_us){
+    if (delay_us==NULL){
+        return E_NOT_OK;
+    }
+    if(Stmin<=0x7F){
+        *delay_us=(uint32)Stmin*1000U;
+        return E_OK;
+    }
+    if (Stmin>=0xF1 && Stmin<=0xF9){
+        *delay_us=(uint32)(Stmin-0xF0)*1000U;
+        return E_OK;
+    }
+    return E_NOT_OK;
+}
 
 Std_ReturnType IsoTp_Transmit(uint16 can_id , const uint8 *data , uint16 length ){
     if (data == NULL){
@@ -147,7 +161,13 @@ Std_ReturnType IsoTp_Transmit(uint16 can_id , const uint8 *data , uint16 length 
                 }
                 cf_count++;
                 if (offset+bytes_to_copy<length){
-                    IsoTP_DelayMS(STmin);
+                    uint32 delay_us=0;
+                    status =IsoTP_GetSTminDelay(STmin,&delay_us);
+                    if (status != E_OK){
+                        return E_NOT_OK;
+                    }
+                    IsoTP_DelayUS(delay_us);
+                    // IsoTP_DelayMS(STmin);
                 }
                 if (block_size !=0 && cf_count>=block_size){
                     uint8 new_block_size =0;
