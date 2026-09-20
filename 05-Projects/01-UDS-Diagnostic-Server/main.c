@@ -3,6 +3,7 @@
 #include "can_if.h"
 #include "can.h"
 #include "isotp.h"
+#include "uds.h"
 
 
 int main(void)
@@ -20,6 +21,22 @@ int main(void)
     {
         printf("CAN Initialization Failed\n");
         return -1;
+    }
+    /*UDS*/
+    uint8 uds_request[]={0x10,0x02};
+    uint8 uds_response[8];
+    uint16 uds_response_length=0U;
+    status =Uds_ProcessRequest(uds_request,2U,uds_response,&uds_response_length);
+    if (status ==E_OK){
+        printf("\nUDS request Accepted\n");
+        printf("\n UDS response\n");
+        for (uint16 index =0U;index<uds_response_length;index++){
+            printf("%02x",uds_response[index]);
+        }
+        printf("\n");
+    }
+    else{
+        printf("\n uds reuest rejected\n");
     }
 
     /* Prepare CAN Frame */
